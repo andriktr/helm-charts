@@ -1,0 +1,38 @@
+{{ if .Values.policies.restrictImageRegistries.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-image-registries
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  validationFailureAction: {{ .Values.policies.restrictImageRegistries.validationFailureAction }}
+  background: {{ .Values.policies.restrictImageRegistries.background }}
+  rules:
+  - name: validate-registries
+    match:
+      resources:
+        kinds:
+        - Pod
+    {{- if or .Values.policies.restrictImageRegistries.excludeSystemNamespaces  .Values.policies.restrictImageRegistries.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictImageRegistries.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictImageRegistries.excludedNamespaces }}
+        {{- range .Values.policies.restrictImageRegistries.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    validate:
+      message: "Unknown image registry. Only this registries are allowed: ifbalacrdev.azurecr.io, ifbalacrprod.azurecr.io"
+      pattern:
+        spec:
+          containers:
+          - image: {{ .Values.policies.restrictImageRegistries.allowedRegistries | quote }}
+{{ end }}          

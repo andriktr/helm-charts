@@ -1,0 +1,46 @@
+{{ if .Values.policies.createNetworkPolicy.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: create-network-policy
+spec:
+  background: {{ .Values.policies.createNetworkPolicy.background }}
+  rules:
+  - name: deny-all-traffic
+    match:
+      resources:
+        kinds:
+        - Namespace
+        {{- if .Values.policies.createNetworkPolicy.matchLabels }}
+        selector:
+          matchLabels:
+          {{- with .Values.policies.createNetworkPolicy.matchLabels }}
+            {{- toYaml . | nindent 12 -}}
+          {{- end -}}
+        {{- end }}            
+    {{- if or .Values.policies.createNetworkPolicy.excludeSystemNamespaces  .Values.policies.createNetworkPolicy.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.createNetworkPolicy.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.createNetworkPolicy.excludedNamespaces }}
+        {{- range .Values.policies.createNetworkPolicy.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    generate:
+      kind: NetworkPolicy
+      name:  {{ .Values.policies.createNetworkPolicy.networkPolicyName }}
+      synchronize: {{ .Values.policies.createNetworkPolicy.synchronize }}
+      namespace: {{ `"{{request.object.metadata.name}}"` }}
+      data:  
+        spec:
+      {{- with .Values.policies.createNetworkPolicy.spec }}
+        {{- toYaml . | nindent 10 -}}
+      {{- end -}}        
+{{ end }}  

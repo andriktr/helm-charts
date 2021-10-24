@@ -1,0 +1,46 @@
+{{ if .Values.policies.restrictPrivilegeEscalation.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-privilege-escalation
+  annotations: 
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  validationFailureAction: {{ .Values.policies.restrictPrivilegeEscalation.validationFailureAction }}
+  background: {{ .Values.policies.restrictPrivilegeEscalation.background }}
+  rules:
+  - name: privilege-escalation
+    match:
+      resources:
+        kinds:
+        - Pod
+    {{- if or .Values.policies.restrictPrivilegeEscalation.excludeSystemNamespaces  .Values.policies.restrictPrivilegeEscalation.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictPrivilegeEscalation.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictPrivilegeEscalation.excludedNamespaces }}
+        {{- range .Values.policies.restrictPrivilegeEscalation.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    validate:
+      message: >-
+        Privilege escalation is disallowed. The fields
+        spec.containers[*].securityContext.allowPrivilegeEscalation, and
+        spec.initContainers[*].securityContext.allowPrivilegeEscalation must
+        be undefined or set to `false`. 
+      pattern:
+        spec:
+          =(initContainers):
+          - =(securityContext):
+              =(allowPrivilegeEscalation): "false"
+          containers:
+          - =(securityContext):
+              =(allowPrivilegeEscalation): "false"
+{{ end }}

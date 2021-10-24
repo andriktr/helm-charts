@@ -1,0 +1,46 @@
+{{ if .Values.policies.createResourceQuotas.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: create-resource-quota
+spec:
+  background: {{ .Values.policies.createResourceQuotas.background }}
+  rules:
+  - name: generate-resourcequota
+    match:
+      resources:
+        kinds:
+        - Namespace
+        {{- if .Values.policies.createResourceQuotas.matchLabels }}
+        selector:
+          matchLabels:
+          {{- with .Values.policies.createResourceQuotas.matchLabels }}
+            {{- toYaml . | nindent 12 -}}
+          {{- end -}}
+        {{- end }}        
+    {{- if or .Values.policies.createResourceQuotas.excludeSystemNamespaces  .Values.policies.createResourceQuotas.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.createResourceQuotas.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.createResourceQuotas.excludedNamespaces }}
+        {{- range .Values.policies.createResourceQuotas.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    generate:
+      kind: ResourceQuota
+      name: {{ .Values.policies.createResourceQuotas.resourceQuotaName }}
+      synchronize: {{ .Values.policies.createResourceQuotas.synchronize }}
+      namespace: {{ `"{{request.object.metadata.name}}"` }}
+      data:
+        spec:
+      {{- with .Values.policies.createResourceQuotas.spec }}
+        {{- toYaml . | nindent 10 -}}
+      {{- end -}}        
+{{ end }}            

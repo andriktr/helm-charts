@@ -1,0 +1,40 @@
+{{ if .Values.policies.requireLabels.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+spec:
+  validationFailureAction: {{ .Values.policies.requireLabels.validationFailureAction }}
+  background: {{ .Values.policies.requireLabels.background }}
+  rules:
+  - name: check-for-labels
+    match:
+      resources:
+        kinds:
+        {{- range .Values.policies.requireLabels.kinds }}
+        - {{ . }}
+        {{- end }}          
+    {{- if or .Values.policies.requireLabels.excludeSystemNamespaces  .Values.policies.requireLabels.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.requireLabels.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.requireLabels.excludedNamespaces }}
+        {{- range .Values.policies.requireLabels.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    validate:
+      message: "The following labels are required to be set on the namespace: environment, it-system-code, responsible, application"
+      pattern:
+        metadata:
+          labels:
+          {{- range .Values.policies.requireLabels.labels }}  
+            {{ . }}: "?*"
+          {{- end }}  
+{{ end }}            

@@ -1,0 +1,46 @@
+{{ if .Values.policies.createLimitRanges.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: create-limit-range
+spec:
+  background: {{ .Values.policies.createLimitRanges.background }}
+  rules:
+  - name: generate-limit-range
+    match:
+      resources:
+        kinds:
+        - Namespace
+        {{- if .Values.policies.createLimitRanges.matchLabels }}
+        selector:
+          matchLabels:
+          {{- with .Values.policies.createLimitRanges.matchLabels }}
+            {{- toYaml . | nindent 12 -}}
+          {{- end -}}
+        {{- end }}        
+    {{- if or .Values.policies.createLimitRanges.excludeSystemNamespaces  .Values.policies.createLimitRanges.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.createLimitRanges.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.createLimitRanges.excludedNamespaces }}
+        {{- range .Values.policies.createLimitRanges.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    generate:
+      kind: LimitRange
+      name: {{ .Values.policies.createLimitRanges.resourceQuotaName }}
+      synchronize: {{ .Values.policies.createLimitRanges.synchronize }}
+      namespace: {{ `"{{request.object.metadata.name}}"` }}
+      data:
+        spec:
+      {{- with .Values.policies.createLimitRanges.spec }}
+        {{- toYaml . | nindent 10 -}}
+      {{- end -}}        
+{{ end }}            

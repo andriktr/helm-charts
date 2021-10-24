@@ -1,0 +1,47 @@
+{{ if .Values.policies.restrictAddCapabilities.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-add-capabilities
+  annotations:
+    policies.kyverno.io/category: Pod Security Standards (Default)
+    policies.kyverno.io/description: >-
+      Capabilities permit privileged actions without giving full root access.
+      Adding capabilities beyond the default set must not be allowed.
+    pod-policies.kyverno.io/autogen-controllers: none 
+spec:
+  validationFailureAction: {{ .Values.policies.restrictAddCapabilities.validationFailureAction }}
+  background: {{ .Values.policies.restrictAddCapabilities.background }}
+  rules:
+  - name: capabilities
+    match:
+      resources:
+        kinds:
+        - Pod
+    exclude:
+      resources:
+        namespaces:
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- if .Values.policies.restrictAddCapabilities.exludedNamespaces }}
+        {{- range .Values.policies.restrictAddCapabilities.exludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}               
+    validate:
+      message: >-
+        Adding of additional capabilities beyond the default set is not allowed.
+        The fields spec.containers[*].securityContext.capabilities.add and 
+        spec.initContainers[*].securityContext.capabilities.add must be empty.
+      pattern:
+        spec:
+          containers:
+          - =(securityContext):
+              =(capabilities):
+                X(add): "null"
+          # =(initContainers):
+          # - =(securityContext):
+          #     =(capabilities):
+          #       X(add): "null"
+{{ end }}
