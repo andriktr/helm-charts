@@ -25,12 +25,6 @@ All policies are separately configurable via chart configuration [values.yaml](v
 Parameter | Description | Default Value
 --------- | ----------- | -------------
 systemNamespaces | List of "system" namespaces this namespaces will be excluded from management and policies will not be applied | ["kube-system", "kube-public", "kube-node-lease", "kyverno"]
-policies.assignTechnicalLabel.enabled | If true policy will be enabled | true
-policies.assignTechnicalLabel.excludeSystemNamespaces | If true policy will not be applied to the system namespaces | true
-policies.assignTechnicalLabel.excludedNamespaces | List of namespaces to which this policy will be not applied | []
-policies.assignTechnicalLabel.labels | Labels `key: value` which will be assigned to the Namespaces. | {}
-policies.assignTechnicalLabel.matchingServiceAccountNames | List of kubernetes service account which wiil be added to policy precondition and if the request comes from one of the account only then policy will take effect | ns-service
-policies.assignTechnicalLabel.matchingServiceAccountNamespaces | List of the namespaces where `policies.assignTechnicalLabel.matchingServiceAccountNames` should be placed. If service account namespace name will match one of the listed names policy will be applied | ns-service
 policies.createNetworkPolicy.enabled | If true policy will be enabled | true
 policies.createNetworkPolicy.background | Controls if rules are applied to existing resources | true
 policies.createNetworkPolicy.synchronize | Controls if the generated resource is kept in-sync with the source resource (which can be defined as part of the policy or may be an existing resource), and generated resources cannot be modified by users. If synchronize is set to false then users can update or delete the generated resource directly | true
