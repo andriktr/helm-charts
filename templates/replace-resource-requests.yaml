@@ -1,0 +1,38 @@
+{{ if .Values.policies.replaceResourceRequests.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: replace-resource-requests
+spec:
+  rules:
+  - name: "overwrite-resource-requests"
+    match:
+      resources:
+        kinds:
+        - Pod
+    {{- if or .Values.policies.replaceResourceRequests.excludeSystemNamespaces  .Values.policies.replaceResourceRequests.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.replaceResourceRequests.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.replaceResourceRequests.excludedNamespaces }}
+        {{- range .Values.policies.replaceResourceRequests.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    mutate:
+      overlay:
+        spec:
+          containers:
+          - (name): "*"
+            resources:
+              requests:
+              {{- with .Values.policies.replaceResourceRequests.requests }}
+                {{- toYaml . | nindent 16 -}}
+              {{- end -}}        
+{{ end }}                

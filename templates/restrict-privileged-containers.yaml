@@ -1,0 +1,44 @@
+{{ if .Values.policies.restrictPrivilegedContainers.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-privileged-containers
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+spec:
+  validationFailureAction: {{ .Values.policies.restrictPrivilegedContainers.validationFailureAction }}
+  background: {{ .Values.policies.restrictPrivilegedContainers.background }}
+  rules:
+  - name: privileged-containers
+    match:
+      resources:
+        kinds:
+        - Pod
+    {{- if or .Values.policies.restrictPrivilegedContainers.excludeSystemNamespaces  .Values.policies.restrictPrivilegedContainers.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictPrivilegedContainers.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictPrivilegedContainers.excludedNamespaces }}
+        {{- range .Values.policies.restrictPrivilegedContainers.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    validate:
+      message: >-
+        Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+        and spec.initContainers[*].securityContext.privileged must not be set to true.
+      pattern:
+        spec:
+          =(initContainers):
+            - =(securityContext):
+                =(privileged): "false"
+          containers:
+            - =(securityContext):
+                =(privileged): "false"
+{{ end }}

@@ -1,0 +1,40 @@
+{{ if .Values.policies.restrictExternalLoadBalancer.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-external-load-balancer
+spec:
+  validationFailureAction: {{ .Values.policies.restrictExternalLoadBalancer.validationFailureAction }}
+  background: {{ .Values.policies.restrictExternalLoadBalancer.background }}
+  rules:
+  - name: match-service-type
+    match:
+      resources:
+        kinds:
+        - Service
+    {{- if or .Values.policies.restrictExternalLoadBalancer.excludeSystemNamespaces  .Values.policies.restrictExternalLoadBalancer.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictExternalLoadBalancer.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictExternalLoadBalancer.excludedNamespaces }}
+        {{- range .Values.policies.restrictExternalLoadBalancer.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}                
+    preconditions:
+    - key: {{ `"{{request.object.spec.type}}"` }}
+      operator: Equals
+      value: LoadBalancer
+    validate:
+      message: 'LB type services should have "service.beta.kubernetes.io/azure-load-balancer-internal: "true"" annotation'
+      pattern:
+        metadata:
+          annotations:
+            service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+{{ end }}            

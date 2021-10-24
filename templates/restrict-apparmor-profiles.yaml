@@ -1,0 +1,43 @@
+{{ if .Values.policies.restrictAppArmor.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-apparmor
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/title: Restrict AppArmor
+    policies.kyverno.io/category: Pod Security Standards (Default)
+    policies.kyverno.io/description: >-
+      On supported hosts, the 'runtime/default' AppArmor profile is applied by default. 
+      The default policy should prevent overriding or disabling the policy, or restrict 
+      overrides to an allowed set of profiles.
+spec:
+  validationFailureAction: {{ .Values.policies.restrictAppArmor.validationFailureAction }}
+  background: {{ .Values.policies.restrictAppArmor.background }}
+  rules:
+  - name: app-armor
+    match:
+      resources:
+        kinds:
+        - Pod
+    exclude:
+      resources:
+        namespaces:
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- if .Values.policies.restrictAppArmor.exludedNamespaces }}
+        {{- range .Values.policies.restrictAppArmor.exludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}        
+    validate:
+      message: >-
+        Specifying other AppArmor profiles is disallowed. The annotation
+        container.apparmor.security.beta.kubernetes.io must not be defined,
+        or must not be set to anything other than `runtime/default`.
+      pattern:
+        metadata:
+          =(annotations):
+            =(container.apparmor.security.beta.kubernetes.io/*): "runtime/default"
+{{ end }}

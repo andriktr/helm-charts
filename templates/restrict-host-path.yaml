@@ -1,0 +1,44 @@
+{{ if .Values.policies.restrictHostPath.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-host-path
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/category: Pod Security Standards (Default)
+    policies.kyverno.io/description: >-
+      HostPath volumes let pods use host directories and volumes in containers.
+      Using host resources can be used to access shared data or escalate privileges
+      and should not be allowed.
+spec:
+  validationFailureAction: {{ .Values.policies.restrictHostPath.validationFailureAction }}
+  background: {{ .Values.policies.restrictHostPath.background }}
+  rules:
+  - name: host-path
+    match:
+      resources:
+        kinds:
+        - Pod
+    {{- if or .Values.policies.restrictHostPath.excludeSystemNamespaces  .Values.policies.restrictHostPath.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictHostPath.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictHostPath.excludedNamespaces }}
+        {{- range .Values.policies.restrictHostPath.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    validate:
+      message: >-
+        HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must not be set.
+      pattern:
+        spec:
+          =(volumes):
+          - X(hostPath): "null"
+{{ end }}

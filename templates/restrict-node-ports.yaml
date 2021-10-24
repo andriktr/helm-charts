@@ -1,0 +1,35 @@
+{{ if .Values.policies.restrictNodePorts.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-node-ports
+spec:
+  validationFailureAction: {{ .Values.policies.restrictNodePorts.validationFailureAction }}
+  background: {{ .Values.policies.restrictNodePorts.background }}
+  rules:
+  - name: validate-nodeport
+    match:
+      resources:
+        kinds:
+        - Service
+    {{- if or .Values.policies.restrictNodePorts.excludeSystemNamespaces  .Values.policies.restrictNodePorts.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictNodePorts.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictNodePorts.excludedNamespaces }}
+        {{- range .Values.policies.restrictNodePorts.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}              
+    validate:
+      message: "Services of type NodePort are not allowed."
+      pattern: 
+        spec:
+          type: "!NodePort"
+{{ end }}          
