@@ -7,25 +7,8 @@ systemNamespaces:
 
 # Policy configuration area
 policies:
-
-# kyverno-policies/templates/assign-technical-label.yaml
-# DESCRIPTION: Policy assigns a label for the namespaces if it's created by "ns-service" account
-# MOTIVATION: Policy allows automatically assign a specific label to a namespaces and based on this label
-# other policies will automatically create other needed resources like network policies
-# resource limits and quotas etc.
-  assignTechnicalLabel:
-    enabled: false
-    background: false
-    excludeSystemNamespaces: true
-    excludedNamespaces: []
-    labels:
-      creator: ns-service
-    matchingServiceAccountNames: 
-    - ns-service
-    matchingServiceAccountNamespaces:
-    - ns-service
-      
-# kyverno-policies/templates/create-network-policy.yaml`
+     
+# aks-kyverno-policies/templates/create-network-policy.yaml`
 # DESCRIPTION: Policy creates a specified network policy when you create or edit K8S namespace
 # MOTIVATION: According the best kubernetes security practices communication between namespaces should 
 # be restricted and only necessary traffic is allowed. 
@@ -69,7 +52,7 @@ policies:
         - protocol: UDP
           port: 20000
 
-# kyverno-policies/templates/create-limit-ranges.yaml
+# aks-kyverno-policies/templates/create-limit-ranges.yaml
 # DESCRIPTION: Policy creates a limit ranges when you create or edit K8S namespace
 # MOTIVATION: Using resource limit ranges controls the default requests and limits and may prevent 
 # from cluster overload.
@@ -92,7 +75,7 @@ policies:
           memory: '256Mi'
         type: Container                       
 
-# kyverno-policies/templates/create-resource-quotas.yaml
+# aks-kyverno-policies/templates/create-resource-quotas.yaml
 # DESCRIPTION: Policy creates a resource quota when you create or edit K8S namespace
 # MOTIVATION: Using resource quotas prevents cases when one application can take all cluster resources
 # and overloads the cluster
@@ -112,7 +95,7 @@ policies:
         requests.cpu: '2'
         requests.memory: '2Gi'   
 
-# kyverno-policies/templates/replace-resource-requests.yaml
+# aks-kyverno-policies/templates/replace-resource-requests.yaml
 # DESCRIPTION: Policy modifies a pod.spec and replaces or adds if not exists resource requests.
 # MOTIVATION: High request may reserve all cluster resources without real need and will block scheduling
 # new pods. 
@@ -124,7 +107,7 @@ policies:
       memory: "128Mi"
       cpu: 100m
 
-# kyverno-policies/templates/require-labels.yaml
+# aks-kyverno-policies/templates/require-labels.yaml
 # DESCRIPTION: Policy requires for specified labels to be applied on specified resources 
 # MOTIVATION: Labels are essential part of kubernetes resources which allows easier manage resources,
 # select them, create reports, get basic info about.
@@ -138,7 +121,7 @@ policies:
     excludedNamespaces: []
     labels: []
 
-# kyverno-policies/templates/require-read-only-root-filesystem.yaml
+# aks-kyverno-policies/templates/require-read-only-root-filesystem.yaml
 # DESCRIPTION: Policy requires for read only root filesystem.
 # MOTIVATION: A read-only root file system helps to enforce an immutable infrastructure strategy; 
 # the container only needs to write on the mounted volume that persists the state. 
@@ -152,7 +135,7 @@ policies:
     excludedNamespaces: []
 
 
-# kyverno-policies/templates/require-run-as-non-root.yaml
+# aks-kyverno-policies/templates/require-run-as-non-root.yaml
 # DESCRIPTION: Policy requires for container to run as non root
 # MOTIVATION: Containers that run as root frequently have far more permissions than 
 # their workload requires which, 
@@ -164,7 +147,7 @@ policies:
     background: true
     excludedNamespaces: []
 
-# kyverno-policies/templates/restrict-default-namespace.yaml
+# aks-kyverno-policies/templates/restrict-default-namespace.yaml
 # DESCRIPTION: Policy restricts Pod, Deployments, StateFulSets, DaemonSets creation in the default K8S namespace  
 # MOTIVATION: Kubernetes namespaces are an optional feature that provide a way to segment and 
 # isolate cluster resources across multiple applications and users. As a best 
@@ -175,7 +158,7 @@ policies:
     validationFailureAction: enforce
     background: true   
 
-# kyverno-policies/templates/restrict-image-registries.yaml
+# aks-kyverno-policies/templates/restrict-image-registries.yaml
 # DESCRIPTION: Policy restricts usage of public container registries and allows to pull images only from specified
 # registries.
 # MOTIVATION: External image registries are not secure so it's important to accept images only from private
@@ -190,7 +173,7 @@ policies:
       mcr.microsoft.com/* | 
       mcr.azk8s.cn/*
 
-# kyverno-policies/templates/restrict-external-loadbalancer.yaml  
+# aks-kyverno-policies/templates/restrict-external-loadbalancer.yaml  
 # DESCRIPTION: Policy restricts usage of external load balancers
 # MOTIVATION: In AKS LoadBalancer service exposes deployment via Azure LoadBalancer resource
 # by default external type of Azure LB created which is publicly exposed and insecure. So according 
@@ -202,7 +185,7 @@ policies:
     validationFailureAction: enforce
     background: true
 
-# kyverno-policies/templates/restrict-privileged-containers.yaml
+# aks-kyverno-policies/templates/restrict-privileged-containers.yaml
 # DESCRIPTION: Policy restricts usage of privileged mode in containers 
 # MOTIVATION: Privileged mode disables most security mechanisms and must not be allowed
   restrictPrivilegedContainers:
@@ -212,7 +195,7 @@ policies:
     validationFailureAction: enforce
     background: true
 
-# kyverno-policies/templates/restrict-privilege-escalation.yaml
+# aks-kyverno-policies/templates/restrict-privilege-escalation.yaml
 # DESCRIPTION: This policy ensures the `allowPrivilegeEscalation` fields are either undefined or set to `false` 
 # MOTIVATION: Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
   restrictPrivilegeEscalation:
@@ -222,7 +205,7 @@ policies:
     validationFailureAction: audit
     background: true      
 
-# kyverno-policies/templates/restrict-host-path.yaml
+# aks-kyverno-policies/templates/restrict-host-path.yaml
 # DESCRIPTION: Policy restricts usage of host paths
 # MOTIVATION: HostPath volumes let pods use host directories and volumes in containers.
 # Using host resources can be used to access shared data or escalate privileges
@@ -234,7 +217,7 @@ policies:
     validationFailureAction: enforce
     background: true
 
-# kyverno-policies/templates/restrict-host-ports.yaml
+# aks-kyverno-policies/templates/restrict-host-ports.yaml
 # DESCRIPTION: Policy restricts usage of host ports
 # MOTIVATION: Access to host ports allows potential snooping of network traffic and should not be
 # allowed, or at minimum restricted to a known list.
@@ -245,7 +228,7 @@ policies:
     validationFailureAction: enforce
     background: true
 
-# kyverno-policies/templates/restrict-node-ports.yaml
+# aks-kyverno-policies/templates/restrict-node-ports.yaml
 # DESCRIPTION: Policy restricts usage of NodePort service type
 # MOTIVATION: A Kubernetes service of type NodePort uses a host port to receive traffic from 
 # any source. A 'NetworkPolicy' resource cannot be used to control traffic to host ports. 
@@ -258,7 +241,7 @@ policies:
     validationFailureAction: enforce
     background: true    
     
-# kyverno-policies/templates/restrict-proc-mounts.yaml
+# aks-kyverno-policies/templates/restrict-proc-mounts.yaml
 # DESCRIPTION: Policy restricts changing the proc mount from the default                
 # MOTIVATION: The default /proc masks are set up to reduce attack surface and should be required  
   restrictProcMount:
@@ -268,7 +251,7 @@ policies:
     validationFailureAction: enforce
     background: true
   
-# kyverno-policies/templates/restrict-add-capabilities.yaml    
+# aks-kyverno-policies/templates/restrict-add-capabilities.yaml    
 # DESCRIPTION: Policy restricts adding of additional capabilities beyond the default set
 # MOTIVATION: Capabilities permit privileged actions without giving full root access.
 # Adding capabilities beyond the default set must not be allowed. 
@@ -279,7 +262,7 @@ policies:
     validationFailureAction: audit
     background: true
 
-# kyverno-policies/templates/restrict-host-namespaces.yaml
+# aks-kyverno-policies/templates/restrict-host-namespaces.yaml
 # DESCRIPTION: Policy restricts usage of host namespaces
 # MOTIVATION: Host namespaces (Process ID namespace, Inter-Process Communication namespace, and
 # network namespace) allow access to shared information and can be used to elevate
@@ -291,7 +274,7 @@ policies:
     validationFailureAction: enforce
     background: true
 
-# kyverno-policies/templates/restrict-selinux.yaml
+# aks-kyverno-policies/templates/restrict-selinux.yaml
 # DESCRIPTION: Policy restricts setting custom SELinux options
 # MOTIVATION: SELinux options can be used to escalate privileges and should not be allowed.                  
   restrictSelinux:
@@ -301,7 +284,7 @@ policies:
     validationFailureAction: enforce
     background: true
 
-# kyverno-policies/templates/restrict-sysctls.yaml
+# aks-kyverno-policies/templates/restrict-sysctls.yaml
 # DESCRIPTION: Policy restricts Setting additional sysctls above the allowed type
 # MOTIVATION: Sysctls can disable security mechanisms or affect all containers on a
 # host, and should be disallowed except for an allowed "safe" subset. A
@@ -314,7 +297,7 @@ policies:
     validationFailureAction: enforce
     background: true
 
-# kyverno-policies/templates/restrict-apparmor.yaml
+# aks-kyverno-policies/templates/restrict-apparmor.yaml
 # DESCRIPTION: Policy restricts specifying AppArmor profiles other than `runtime\default`                    
 # MOTIVATION: On supported hosts, the 'runtime/default' AppArmor profile is applied by default. 
 # The default policy should prevent overriding or disabling the policy, 
@@ -326,7 +309,7 @@ policies:
     validationFailureAction: enforce
     background: true
 
-# kyverno-policies/templates/check-deprecated-apis.yaml
+# aks-kyverno-policies/templates/check-deprecated-apis.yaml
 # DESCRIPTION: Kubernetes APIs are sometimes deprecated and removed after a few releases. 
 # As a best practice, older API versions should be replaced with newer versions. 
 # This policy validates for APIs that are deprecated or scheduled for removal.
