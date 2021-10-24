@@ -23,15 +23,4 @@ entries:
     urls:
     - https://github.com/andriktr/helm-charts/releases/download/aks-kyverno-policies-0.2.0/aks-kyverno-policies-0.2.0.tgz
     version: 0.2.0
-  kyverno-policies:
-  - apiVersion: v2
-    appVersion: 0.1.0
-    created: "2021-10-24T19:26:12.281696741Z"
-    description: A Helm chart to deploy Kyverno policies
-    digest: b291314f623b501d90a5a824618d084ea6c9fc2188b18a309d5aae95ba24f10d
-    name: kyverno-policies
-    type: application
-    urls:
-    - https://github.com/andriktr/helm-charts/releases/download/kyverno-policies-0.1.0/kyverno-policies-0.1.0.tgz
-    version: 0.1.0
 generated: "2021-10-24T19:33:56.9573424Z"
