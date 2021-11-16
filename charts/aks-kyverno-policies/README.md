@@ -79,7 +79,7 @@ policies.restrictImageRegistries.excludeSystemNamespaces | If true policy will n
 policies.restrictImageRegistries.excludedNamespaces | List of namespaces to which this policy will be not applied | []
 policies.restrictImageRegistries.validationFailureAction | Policy action acceptable values `audit` or `enforce` | audit
 policies.restrictImageRegistries.background | Controls if rules are applied to existing resources | true
-policies.restrictImageRegistries.allowedRegistries | Pipe separated list of image registries which will be allowed by policy | ifbalacrdev.azurecr.io/* \| ifbalacrprod.azurecr.io/*
+policies.restrictImageRegistries.allowedRegistries | Pipe separated list of image registries which will be allowed by policy | dev.azurecr.io/* \| prod.azurecr.io/*
 policies.restrictPrivilegedContainers.enabled | If true policy will be enabled | true
 policies.restrictPrivilegedContainers.excludeSystemNamespaces | If true policy will not be applied to the system namespaces | true
 policies.restrictPrivilegedContainers.excludedNamespaces | List of namespaces to which this policy will be not applied | []
