@@ -1,0 +1,92 @@
+{{ if .Values.policies.restrictCriSocketMounts.enabled }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-cri-socket-mounts
+  annotations:
+spec:
+  validationFailureAction: {{ .Values.policies.restrictCriSocketMounts.validationFailureAction }}
+  background: {{ .Values.policies.restrictCriSocketMounts.background }}
+  rules:
+  - name: validate-docker-sock-mount
+    match:
+      resources:
+        kinds:
+        - Pod
+    {{- if or .Values.policies.restrictCriSocketMounts.excludeSystemNamespaces  .Values.policies.restrictCriSocketMounts.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictCriSocketMounts.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictCriSocketMounts.excludedNamespaces }}
+        {{- range .Values.policies.restrictCriSocketMounts.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    validate:
+      message: "Use of the Docker Unix socket is not allowed."
+      pattern:
+        spec:
+          =(volumes):
+            - =(hostPath):
+                path: "!/var/run/docker.sock"
+  - name: validate-crio-sock-mount
+    match:
+      resources:
+        kinds:
+        - Pod
+    {{- if or .Values.policies.restrictCriSocketMounts.excludeSystemNamespaces  .Values.policies.restrictCriSocketMounts.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictCriSocketMounts.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictCriSocketMounts.excludedNamespaces }}
+        {{- range .Values.policies.restrictCriSocketMounts.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    validate:
+      message: "Use of the CRI-O Unix socket is not allowed."
+      pattern:
+        spec:
+          =(volumes):
+            - =(hostPath):
+                path: "!/var/run/crio.sock"              
+  - name: validate-containerd-sock-mount
+    match:
+      resources:
+        kinds:
+        - Pod
+    {{- if or .Values.policies.restrictCriSocketMounts.excludeSystemNamespaces  .Values.policies.restrictCriSocketMounts.excludedNamespaces }}    
+    exclude:
+      resources:
+        namespaces:
+        {{- if .Values.policies.restrictCriSocketMounts.excludeSystemNamespaces }}
+        {{- range .Values.systemNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.policies.restrictCriSocketMounts.excludedNamespaces }}
+        {{- range .Values.policies.restrictCriSocketMounts.excludedNamespaces }}
+        - {{ . }}
+        {{- end }}
+        {{- end }}
+    {{- end }}        
+    validate:
+      message: "Use of the CRI-O Unix socket is not allowed."
+      pattern:
+        spec:
+          =(volumes):
+            - =(hostPath):
+                path: "!/var/run/containerd.sock"
+{{ end }}

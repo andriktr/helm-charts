@@ -4,10 +4,6 @@ kind: ClusterPolicy
 metadata:
   name: restrict-add-capabilities
   annotations:
-    policies.kyverno.io/category: Pod Security Standards (Default)
-    policies.kyverno.io/description: >-
-      Capabilities permit privileged actions without giving full root access.
-      Adding capabilities beyond the default set must not be allowed.
     pod-policies.kyverno.io/autogen-controllers: none 
 spec:
   validationFailureAction: {{ .Values.policies.restrictAddCapabilities.validationFailureAction }}
@@ -40,8 +36,8 @@ spec:
           - =(securityContext):
               =(capabilities):
                 X(add): "null"
-          # =(initContainers):
-          # - =(securityContext):
-          #     =(capabilities):
-          #       X(add): "null"
+          =(initContainers):
+          - =(securityContext):
+              =(capabilities):
+                X(add): "null"
 {{ end }}

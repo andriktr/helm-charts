@@ -5,10 +5,6 @@ metadata:
   name: restrict-host-ports
   annotations:
     pod-policies.kyverno.io/autogen-controllers: none
-    policies.kyverno.io/category: Pod Security Standards (Default)
-    policies.kyverno.io/description: >-
-      Access to host ports allows potential snooping of network traffic and should not be
-      allowed, or at minimum restricted to a known list.
 spec:
   validationFailureAction: {{ .Values.policies.restrictHostPorts.validationFailureAction }}
   background: {{ .Values.policies.restrictHostPorts.background }}

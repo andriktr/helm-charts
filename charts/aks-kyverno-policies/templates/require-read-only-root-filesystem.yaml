@@ -4,11 +4,6 @@ kind: ClusterPolicy
 metadata:
   name: require-read-only-root-filesystem
   annotations:
-    policies.kyverno.io/description: >-
-      A read-only root file system helps to enforce an immutable infrastructure strategy; 
-      the container only needs to write on the mounted volume that persists the state. 
-      An immutable root filesystem can also prevent malicious binaries from writing to the 
-      host system.
     pod-policies.kyverno.io/autogen-controllers: none       
 spec:
   validationFailureAction: {{ .Values.policies.requireReadOnlyRootFileSystem.validationFailureAction }}

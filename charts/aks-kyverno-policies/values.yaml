@@ -21,36 +21,36 @@ policies:
     matchLabels:
       creator: ns-service
     networkPolicyname: default-np 
-    spec:
-      podSelector: {}
-      policyTypes:
-      - Egress
-      - Ingress              
-      egress:
-      - ports:
-        - protocol: TCP
-          port: 53
-        - protocol: UDP
-          port: 53          
-      - to:
-        - namespaceSelector: {}
-          podSelector:
-            matchLabels:
-              app: "consul"
-        ports: 
-        - protocol: TCP
-          port: 8443
-        - protocol: TCP
-          port: 8501
-        - protocol: TCP
-          port: 8502
-      ingress:
-      - from:
-        ports:
-        - protocol: TCP
-          port: 20000
-        - protocol: UDP
-          port: 20000
+    spec: {}
+      # podSelector: {}
+      # policyTypes:
+      # - Egress
+      # - Ingress              
+      # egress:
+      # - ports:
+      #   - protocol: TCP
+      #     port: 53
+      #   - protocol: UDP
+      #     port: 53          
+      # - to:
+      #   - namespaceSelector: {}
+      #     podSelector:
+      #       matchLabels:
+      #         app: "consul"
+      #   ports: 
+      #   - protocol: TCP
+      #     port: 8443
+      #   - protocol: TCP
+      #     port: 8501
+      #   - protocol: TCP
+      #     port: 8502
+      # ingress:
+      # - from:
+      #   ports:
+      #   - protocol: TCP
+      #     port: 20000
+      #   - protocol: UDP
+      #     port: 20000
 
 # aks-kyverno-policies/templates/create-limit-ranges.yaml
 # DESCRIPTION: Policy creates a limit ranges when you create or edit K8S namespace
@@ -65,15 +65,15 @@ policies:
       creator: ns-service
     resourceQuotaName: default-container-compute
     excludedNamespaces: []
-    spec:
-      limits:
-      - default: 
-          cpu: '0.5'
-          memory: '512Mi'
-        defaultRequest:
-          cpu: '0.25'
-          memory: '256Mi'
-        type: Container                       
+    spec: {}
+      # limits:
+      # - default: 
+      #     cpu: '0.5'
+      #     memory: '512Mi'
+      #   defaultRequest:
+      #     cpu: '0.25'
+      #     memory: '256Mi'
+      #   type: Container                       
 
 # aks-kyverno-policies/templates/create-resource-quotas.yaml
 # DESCRIPTION: Policy creates a resource quota when you create or edit K8S namespace
@@ -88,12 +88,12 @@ policies:
       creator: ns-service
     resourceQuotaName: default-ns-compute
     excludedNamespaces: []
-    spec:
-      hard:
-        limits.cpu: '4'
-        limits.memory: '3Gi'
-        requests.cpu: '2'
-        requests.memory: '2Gi'   
+    spec: {}
+      # hard:
+      #   limits.cpu: '4'
+      #   limits.memory: '3Gi'
+      #   requests.cpu: '2'
+      #   requests.memory: '2Gi'   
 
 # aks-kyverno-policies/templates/replace-resource-requests.yaml
 # DESCRIPTION: Policy modifies a pod.spec and replaces or adds if not exists resource requests.
@@ -103,16 +103,16 @@ policies:
     enabled: false
     excludeSystemNamespaces: true
     excludedNamespaces: []
-    requests:
-      memory: "128Mi"
-      cpu: 100m
+    requests: {}
+      # memory: "128Mi"
+      # cpu: 100m
 
 # aks-kyverno-policies/templates/require-labels.yaml
 # DESCRIPTION: Policy requires for specified labels to be applied on specified resources 
 # MOTIVATION: Labels are essential part of kubernetes resources which allows easier manage resources,
 # select them, create reports, get basic info about.
   requireLabels:
-    enabled: false
+    enabled: true
     excludeSystemNamespaces: true
     kinds:
     - Namespace  
@@ -120,6 +120,8 @@ policies:
     background: true
     excludedNamespaces: []
     labels: []
+    # - app
+    # - responsible
 
 # aks-kyverno-policies/templates/require-read-only-root-filesystem.yaml
 # DESCRIPTION: Policy requires for read only root filesystem.
@@ -310,13 +312,38 @@ policies:
     background: true
 
 # aks-kyverno-policies/templates/check-deprecated-apis.yaml
-# DESCRIPTION: Kubernetes APIs are sometimes deprecated and removed after a few releases. 
+# DESCRIPTION: Policy help to identify a resources with deprecated which 
+# will be removed in upcoming kubernetes versions   
+# MOTIVATION: Kubernetes APIs are sometimes deprecated and removed after a few releases. 
 # As a best practice, older API versions should be replaced with newer versions. 
-# This policy validates for APIs that are deprecated or scheduled for removal.
-# MOTIVATION: Policy help to identify a resources with deprecated which will be removed in upcoming
-# kubernetes versions
+# This policy validates for APIs that are deprecated or scheduled for removal. 
   checkDeprecatedApis:
-    enabled: false
+    enabled: true
     validationFailureAction: audit
     excludeSystemNamespaces: true
     excludedNamespaces: []
+
+# aks-kyverno-policies/templates/restrict-cri-socket-mounts.yaml
+# DESCRIPTION: Policy validates that the sockets used for CRI engines Docker, 
+# Containerd, and CRI-O are not used
+# MOTIVATION: Container daemon socket bind mounts allows access to the container engine on the node. 
+# This access can be used for privilege escalation and to manage containers outside of Kubernetes, 
+# and hence should not be allowed. 
+  restrictCriSocketMounts:
+    enabled: true
+    background: true
+    validationFailureAction: enforce
+    excludeSystemNamespaces: true
+    excludedNamespaces: []
+
+# aks-kyverno-policies/templates/restrict-custom-runtimes.yaml
+# DESCRIPTION: This policy, requiring Kubernetes v1.19 or later, ensures that only the `RuntimeDefault` 
+# or `Localhost` is used as a `type` and that it is not unset.
+# MOTIVATION: The runtime default seccomp profile must be required, 
+# or only specific additional profiles should be allowed.  
+  restrictCustomRuntimes:
+    enabled: true
+    background: true
+    validationFailureAction: enforce
+    excludeSystemNamespaces: true
+    excludedNamespaces: []          

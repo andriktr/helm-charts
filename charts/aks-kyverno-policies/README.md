@@ -139,7 +139,16 @@ policies.checkDeprecatedApis.enabled | If true policy will be enabled | true
 policies.checkDeprecatedApis.validationFailureAction | Policy action acceptable values `audit` or `enforce` | audit
 policies.checkDeprecatedApis.excludeSystemNamespaces | If true policy will not be applied to the system namespaces | true
 policies.checkDeprecatedApis.excludedNamespaces | List of namespaces to which this policy will be not applied | []
-
+policies.restrictCriSocketMounts.enabled | If true policy will be enabled | true
+policies.restrictCriSocketMounts.excludeSystemNamespaces | If true policy will not be applied to the system namespaces | true
+policies.restrictCriSocketMounts.excludedNamespaces | List of namespaces to which this policy will be not applied | []
+policies.restrictCriSocketMounts.validationFailureAction | Policy action acceptable values `audit` or `enforce` | audit
+policies.restrictCriSocketMounts.background | Controls if rules are applied to existing resources | true
+policies.restrictCustomRuntimes.enabled | If true policy will be enabled | true
+policies.restrictCustomRuntimes.excludeSystemNamespaces | If true policy will not be applied to the system namespaces | true
+policies.restrictCustomRuntimes.excludedNamespaces | List of namespaces to which this policy will be not applied | []
+policies.restrictCustomRuntimes.validationFailureAction | Policy action acceptable values `audit` or `enforce` | audit
+policies.restrictCustomRuntimes.background | Controls if rules are applied to existing resources | true
 
 
 ## External Documentation

@@ -5,12 +5,6 @@ metadata:
   name: restrict-apparmor
   annotations:
     pod-policies.kyverno.io/autogen-controllers: none
-    policies.kyverno.io/title: Restrict AppArmor
-    policies.kyverno.io/category: Pod Security Standards (Default)
-    policies.kyverno.io/description: >-
-      On supported hosts, the 'runtime/default' AppArmor profile is applied by default. 
-      The default policy should prevent overriding or disabling the policy, or restrict 
-      overrides to an allowed set of profiles.
 spec:
   validationFailureAction: {{ .Values.policies.restrictAppArmor.validationFailureAction }}
   background: {{ .Values.policies.restrictAppArmor.background }}

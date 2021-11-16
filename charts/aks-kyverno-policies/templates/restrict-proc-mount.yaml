@@ -4,9 +4,6 @@ kind: ClusterPolicy
 metadata:
   name: restrict-proc-mount
   annotations:
-    policies.kyverno.io/category: Pod Security Standards (Default)
-    policies.kyverno.io/description: >-
-      The default /proc masks are set up to reduce attack surface and should be required.
     pod-policies.kyverno.io/autogen-controllers: none  
 spec:
   validationFailureAction: {{ .Values.policies.restrictProcMount.validationFailureAction }}

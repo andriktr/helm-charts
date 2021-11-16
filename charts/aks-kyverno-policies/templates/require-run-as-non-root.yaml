@@ -4,7 +4,6 @@ kind: ClusterPolicy
 metadata:
   name: require-run-as-non-root
   annotations:
-    policies.kyverno.io/description: Containers must be required to run as non-root users.
     pod-policies.kyverno.io/autogen-controllers: none
 spec:
   validationFailureAction: {{ .Values.policies.requireRunAsNonRoot.validationFailureAction }}
@@ -42,14 +41,14 @@ spec:
           containers:
           - =(securityContext):
               =(runAsNonRoot): true
-          # =(initContainers):
-          # - =(securityContext):
-          #     =(runAsNonRoot): true              
+          =(initContainers):
+          - =(securityContext):
+              =(runAsNonRoot): true              
       - spec:
           containers:
           - securityContext:
               runAsNonRoot: true
-          # =(initContainers):
-          # - securityContext:
-          #     runAsNonRoot: true
+          =(initContainers):
+          - securityContext:
+              runAsNonRoot: true
 {{ end }}
