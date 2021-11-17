@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-
-
-
+    paths:
+      - charts/aks-kyverno-policies/*
+        
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -26,12 +26,6 @@ jobs:
         with:
           version: v3.4.0
 
-      - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.2.1
         env:
