@@ -150,7 +150,6 @@ policies.restrictCustomRuntimes.excludedNamespaces | List of namespaces to which
 policies.restrictCustomRuntimes.validationFailureAction | Policy action acceptable values `audit` or `enforce` | audit
 policies.restrictCustomRuntimes.background | Controls if rules are applied to existing resources | true
 
-
 ## External Documentation
 
 * [Kyverno]
