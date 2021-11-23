@@ -69,7 +69,7 @@ policies.requireLabels.kinds | List of resource kinds for which this policy will
 policies.requireLabels.validationFailureAction | Policy action acceptable values `audit` or `enforce` | audit
 policies.requireLabels.background | Controls if rules are applied to existing resources | true
 policies.requireLabels.excludedNamespaces | List of namespaces to which this policy will be not applied | []
-policies.requireLabels.labels | List of labels which will be added to the policy rule and be required by it | ["it-system-code", "responsible", "application", "environment"]
+policies.requireLabels.labels | List of labels which will be added to the policy rule and be required by it | []
 policies.requireReadOnlyRootFileSystem.enabled | If true policy will be enabled | true
 policies.requireReadOnlyRootFileSystem.excludeSystemNamespaces | If true policy will not be applied to the system namespaces | true
 policies.requireReadOnlyRootFileSystem.excludedNamespaces | List of namespaces to which this policy will be not applied | []
