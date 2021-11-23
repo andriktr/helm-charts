@@ -16,11 +16,11 @@ The motivation for this chart is to provide a way to deploy easy configurable Ky
 * [Description](#description)
 * [Motivation](#motivation)
 * [Prerequisites](#prerequisites)
-* [Configure Policies](#configure-kyverno-policies)
+* [Configure Policies](#configure-policies)
 * [Deploy and Upgrade Kyverno Policies](#deploy-and-upgrade-kyverno-policies)
 * [Review Policy Reports](#review-policy-reports)  
 * [Remove the solution](#remove-the-solution)
-* [Other Documentation](#external-documentation)
+* [Other Documentation](#other-documentation)
 
 <!--te-->
 
@@ -211,7 +211,7 @@ In order to remove the solution you need to run the following command:
 helm uninstall aks-kyverno-policies --namespace kyverno
 ```
 
-## External Documentation
+## Other Documentation
 
 * [Kyverno]
 
