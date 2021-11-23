@@ -8,5 +8,5 @@ Get policies report
 kubectl get polr -A
 
 To check for failed policies run:
-kubectl describe polr -A | grep -i "status: \+fail" -B10
+kubectl describe polr -A | grep -i "Result: \+fail" -B10
 

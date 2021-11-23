@@ -2,7 +2,11 @@
 
 ## Description
 
-Current repository contains a Helm chart which deploys a configurable [Kyverno] policies which will help secure AKS (Azure Kubernetes Cluster) cluster.
+Current repository contains a Helm chart which deploys a configurable [Kyverno] policies which will help secure and manage AKS (Azure Kubernetes Cluster) cluster. Chart contains more than 20 policies which might be useful to secure and ease your AKS cluster management. They will help to cover a PSP deprecation, restrict LB service to internal only, control allowed container registries, control labels etc. Also helps to automate creation of such things as limit ranges, network policies, etc.
+
+## Motivation
+
+The motivation for this chart is to provide a way to deploy easy configurable Kyverno policies to an AKS cluster. Original [Kyverno policies in the library](https://kyverno.io/policies/) are in plain yaml format. This chart allows to deploy the policies in a templated way. You can configure all policies in one place trough helm configuration file. You can simply enable or disable policies, set exclusions, define in which mode policy will be applied or if policy generates resources you can set resource specification there.
 
 ## Table of Contents
 
@@ -10,13 +14,19 @@ Current repository contains a Helm chart which deploys a configurable [Kyverno] 
 
 * [Table of Contents](#table-of-contents)
 * [Description](#description)
+* [Motivation](#motivation)
 * [Prerequisites](#prerequisites)
 * [Configure Policies](#configure-kyverno-policies)
-* [Deploy and Upgrade Kyverno Policies](#deploy-and-upgrade-kyverno-policies)  
+* [Deploy and Upgrade Kyverno Policies](#deploy-and-upgrade-kyverno-policies)
+* [Review Policy Reports](#review-policy-reports)  
 * [Remove the solution](#remove-the-solution)
 * [Other Documentation](#external-documentation)
 
 <!--te-->
+
+## Prerequisites
+
+[Kyverno](https://kyverno.io/) - policy management solution for Kubernetes should be installed and configured in your cluster. Steps to install Kyverno in your cluster can be found [here](https://kyverno.io/docs/installation/).
 
 ## Configure Policies
 
@@ -31,7 +41,7 @@ policies.createNetworkPolicy.synchronize | Controls if the generated resource is
 policies.createNetworkPolicy.excludeSystemNamespaces | If true policy will not be applied to the system namespaces | true
 policies.createNetworkPolicy.excludedNamespaces | List of namespaces to which this policy will be not applied | []
 policies.createNetworkPolicy.matchLabels | Policy will take effect only for those namespaces which will have a defined labels `key: value` | {}
-policies.createNetworkPolicy.networkPolicyName | Name which will be set to the network policy | "-default-np"
+policies.createNetworkPolicy.networkPolicyName | Name which will be set to the network policy | "default-np"
 policies.createNetworkPolicy.spec | Configurable [NetworkPolicy.spec] which will be applied to the network policy | {}
 policies.createLimitRanges.enabled | If true policy will be enabled | true
 policies.createLimitRanges.background | Controls if rules are applied to existing resources | true
@@ -149,6 +159,57 @@ policies.restrictCustomRuntimes.excludeSystemNamespaces | If true policy will no
 policies.restrictCustomRuntimes.excludedNamespaces | List of namespaces to which this policy will be not applied | []
 policies.restrictCustomRuntimes.validationFailureAction | Policy action acceptable values `audit` or `enforce` | audit
 policies.restrictCustomRuntimes.background | Controls if rules are applied to existing resources | true
+
+## Deploy and Upgrade Kyverno Policies
+
+> Note: It's recommended to first deploy the policies in audit mode `policies.*.validationFailureAction: audit` to make sure that everything is working as expected and not breaking existing deployments.
+
+```bash
+helm repo add sysadminas https://sysadminas.eu/helm-charts/ # Add sysadminas Helm Chart Repository
+helm repo update # Update Helm Chart Repositories
+```
+
+In case you satisfied with default settings run the following:
+
+```bash
+helm upgrade -i  aks-kyverno-policies sysadminas/aks-kyverno-policies --namespace kyverno # Run if you satisfied with default settings, probably you will need to change some settings based on your needs
+```
+
+In case if you would like to change some settings you can use the following:
+
+```bash
+helm pull sysadminas/aks-kyverno-policies --untar # Pull Helm Chart and unpack it to local directory and adjust values in helm config file
+helm upgrade aks-kyverno-policies aks-kyverno-policies --namespace kyverno # Run after you adjusted values in helm config file or pass your own values file with -f option
+```
+
+## Review Policy Reports
+
+To list all the policies that are applied to your cluster run the following:
+
+```bash
+kubeclt get clusterpolicies.kyverno.io
+```
+
+To review policy validation report run the following:
+
+```bash
+kubectl get polr -A
+```
+
+To grep a details about failed policy validation run the following:
+
+```bash
+kubectl describe polr -A | grep -i "Result: \+fail" -B10 # Review all failed policies
+kubectl describe polr -n <namespace> | grep -i "Result: \+fail" -B10 # Review failed policies for specific namespace
+```
+
+## Remove the solution
+
+In order to remove the solution you need to run the following command:
+
+```bash
+helm uninstall aks-kyverno-policies --namespace kyverno
+```
 
 ## External Documentation
 
