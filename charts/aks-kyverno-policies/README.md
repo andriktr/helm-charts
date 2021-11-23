@@ -172,14 +172,14 @@ helm repo update # Update Helm Chart Repositories
 In case you satisfied with default settings run the following:
 
 ```bash
-helm upgrade -i  aks-kyverno-policies sysadminas/aks-kyverno-policies --namespace kyverno # Run if you satisfied with default settings, probably you will need to change some settings based on your needs
+helm upgrade aks-kyverno-policies sysadminas/aks-kyverno-policies --namespace kyverno -i # Run if you satisfied with default settings, probably you will need to change some settings based on your needs
 ```
 
 In case if you would like to change some settings you can use the following:
 
 ```bash
 helm pull sysadminas/aks-kyverno-policies --untar # Pull Helm Chart and unpack it to local directory and adjust values in helm config file
-helm upgrade aks-kyverno-policies aks-kyverno-policies --namespace kyverno # Run after you adjusted values in helm config file or pass your own values file with -f option
+helm upgrade aks-kyverno-policies aks-kyverno-policies --namespace kyverno -i # Run after you adjusted values in helm config file or pass your own values file with -f option
 ```
 
 ## Review Policy Reports
