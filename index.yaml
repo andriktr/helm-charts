@@ -3,6 +3,17 @@ entries:
   aks-kyverno-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2021-11-23T11:51:21.406825335Z"
+    description: A Helm chart to deploy Kyverno policies which are adjusted for Azure
+      Kubernetes Services (AKS)
+    digest: 8f85d2e0a1182be52fbbb28465d9019c88656e7527da3aaa32817be917c5de84
+    name: aks-kyverno-policies
+    type: application
+    urls:
+    - https://github.com/andriktr/helm-charts/releases/download/aks-kyverno-policies-0.5.9/aks-kyverno-policies-0.5.9.tgz
+    version: 0.5.9
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2021-11-23T09:15:09.37333184Z"
     description: A Helm chart to deploy Kyverno policies which are adjusted for Azure
       Kubernetes Services (AKS)
@@ -133,4 +144,4 @@ entries:
     urls:
     - https://github.com/andriktr/helm-charts/releases/download/aks-kyverno-policies-0.2.0/aks-kyverno-policies-0.2.0.tgz
     version: 0.2.0
-generated: "2021-11-23T09:15:09.373737944Z"
+generated: "2021-11-23T11:51:21.40690624Z"
