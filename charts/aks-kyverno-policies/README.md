@@ -6,7 +6,7 @@ Current repository contains a Helm chart which deploys a configurable [Kyverno] 
 
 ## Motivation
 
-The motivation for this chart is to provide a way to deploy easy configurable Kyverno policies to an AKS cluster. Original [Kyverno policies in the library](https://kyverno.io/policies/) are in plain yaml format. This chart allows to deploy the policies in a templated way. You can configure all policies in one place trough helm configuration file. You can simply enable or disable policies, set exclusions, define in which mode policy will be applied or if policy generates resources you can set resource specification there.
+The motivation for this chart is to provide a way to deploy easy configurable Kyverno policies to an AKS cluster. Original [Kyverno policy library](https://kyverno.io/policies/) contains policies in plain yaml format. This chart allows to deploy the policies in a templated way. You can configure all policies in one place trough helm configuration file. You can simply enable or disable policies, set exclusions, define in which mode policy will be applied or if policy generates resources you can set resource specification there.
 
 ## Table of Contents
 
